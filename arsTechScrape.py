@@ -22,9 +22,10 @@ tagObjects = parsedPage.select("h2 > a")
 
 # Going to gather a list of the names of the articles.
 articleNames = []
+articleLinks = []
 for article in tagObjects:
     articleNames.append(article.text)
-
+    articleLinks.append(article.get("href"))
 # Next, I retrieve the number of comments tied to each article.
 comments = parsedPage.select("span.comment-count-number")
 commentCounts = []
@@ -33,11 +34,15 @@ for amount in comments:
 
 # Use the zip function to group the two lists together, then pass that zip tuple to the dict() function to make a
 # dictionary.
+countsAndLinks = list(zip(commentCounts, articleLinks))
 
-articleCommentCount = dict(zip(articleNames, commentCounts))
+# A dictionary that ties together the article names along with their corresponding links.
+articleCommentCount = dict(zip(articleNames, countsAndLinks))
 
 # Sort dictionary by the amount of comments per article.
-sortedList = sorted(articleCommentCount.items(), key=lambda art: int(art[1]), reverse=True)
+sortedList = sorted(articleCommentCount.items(), key=lambda art: int(art[1][0]), reverse=True)
 
+# Get top 5 articles by comments and open them in the browser.
 for article in sortedList[:5]:
-    print(f"'{article[0]}' has {article[1]} comments")
+    print(f"'{article[0]}' has {article[1][0]} comments")
+    webbrowser.open(article[1][1])
