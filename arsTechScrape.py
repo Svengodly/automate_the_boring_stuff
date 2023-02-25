@@ -36,8 +36,8 @@ for amount in comments:
 
 articleCommentCount = dict(zip(articleNames, commentCounts))
 
-#
+# Sort dictionary by the amount of comments per article.
 sortedList = sorted(articleCommentCount.items(), key=lambda art: int(art[1]), reverse=True)
 
-for thing in sortedList[:5]:
-    print(thing)
+for article in sortedList[:5]:
+    print(f"'{article[0]}' has {article[1]} comments")
