@@ -1,20 +1,21 @@
 import openpyxl
 from openpyxl.styles import Font
+from openpyxl.utils import get_column_letter
 
 
 """Generates a multiplication table of X by X dimensions from user input."""
-# flag = False
-# while not flag:
-#     try:
-#         dimension = int(input("Please enter the dimension of the table: "))
-#         if dimension < 1:
-#             print("Must be an integer greater than 0.")
-#             continue
-#         else:
-#             print(f"Creating a {dimension}x{dimension} table...")
-#             flag = True
-#     except ValueError:
-#         print("Invalid input.")
+flag = False
+while not flag:
+    try:
+        dimension = int(input("Please enter the dimension of the table: "))
+        if dimension < 1:
+            print("Must be an integer greater than 0.")
+            continue
+        else:
+            print(f"Creating a {dimension}x{dimension} table...")
+            flag = True
+    except ValueError:
+        print("Invalid input. Cannot be a letter, special character, negative number or floating point.")
 
 mulTableWorkBook = openpyxl.Workbook()
 
@@ -22,32 +23,42 @@ mulTableSheet = mulTableWorkBook.active
 
 mulTableSheet.title = "Multiply"
 
-rowHeaders = mulTableSheet["A2:A6"]
-columnHeaders = mulTableSheet["B1:F1"]
+# Gets the range of cells by using users input plus 1. The plus 1 is needed because we are not starting from the first
+# row/column.
+rowHeaders = mulTableSheet[f"A2:A{dimension + 1}"]
+
+columnHeaders = mulTableSheet[f"B1:{get_column_letter(dimension + 1)}1"]
+
+# Add styling for the headers by creating a Font object.
+
+headerStyle = Font(size=16, bold=True)
 
 # columnHeaders consists of a single tuple within another tuple: Each cell is in the same tuple. I can access each
 # element by passing an index.
-for number in range(5):
+for number in range(dimension):
     for cell in columnHeaders:
         cell[number].value = number + 1
-        print(cell[number], cell[number].value)
+        cell[number].font = headerStyle
+        # print(cell[number], cell[number].value)
 
 # rowHeaders consists of tuples within a tuple: Each cell is in its own tuple. The for loop returns a tuple, containing
 # just one cell object.
 for cell in rowHeaders:
     cell[0].value = cell[0].row - 1
-    print(cell[0], cell[0].value)
+    cell[0].font = headerStyle
+    # print(cell[0], cell[0].value)
 
 # Select area of workbook that will contain the products of the numbers
-productRange = mulTableSheet["B2:F6"]
+productRange = mulTableSheet[f"B2:{get_column_letter(dimension + 1)}{dimension + 1}"]
 
 # Iterates over each tuple, which is a row of cell objects. The numbers to be multiplied can be retrieved by the
 # numerical value of the rows and columns subtracted by 1.
 for group in productRange:
     for number in range(len(group)):
         group[number].value = (group[number].row - 1) * (group[number].column - 1)
-        print(group[number], group[number].value)
+        # print(group[number], group[number].value)
 
+mulTableSheet.freeze_panes = "B2"
 # Saves workbook in current working directory.
 mulTableWorkBook.save('multiplicationTable.xlsx')
 # print(productRange)
