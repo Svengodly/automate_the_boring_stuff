@@ -1,9 +1,13 @@
+#! python3
+
 import openpyxl
 from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
 
 
 """Generates a multiplication table of X by X dimensions from user input."""
+
+# Verifies user input by checking to see if they entered a positive integer. Loops until a valid input is received.
 flag = False
 while not flag:
     try:
@@ -21,7 +25,7 @@ mulTableWorkBook = openpyxl.Workbook()
 
 mulTableSheet = mulTableWorkBook.active
 
-mulTableSheet.title = "Multiply"
+mulTableSheet.title = "Multiplication"
 
 # Gets the range of cells by using users input plus 1. The plus 1 is needed because we are not starting from the first
 # row/column.
@@ -39,14 +43,12 @@ for number in range(dimension):
     for cell in columnHeaders:
         cell[number].value = number + 1
         cell[number].font = headerStyle
-        # print(cell[number], cell[number].value)
 
 # rowHeaders consists of tuples within a tuple: Each cell is in its own tuple. The for loop returns a tuple, containing
 # just one cell object.
 for cell in rowHeaders:
     cell[0].value = cell[0].row - 1
     cell[0].font = headerStyle
-    # print(cell[0], cell[0].value)
 
 # Select area of workbook that will contain the products of the numbers
 productRange = mulTableSheet[f"B2:{get_column_letter(dimension + 1)}{dimension + 1}"]
@@ -56,9 +58,7 @@ productRange = mulTableSheet[f"B2:{get_column_letter(dimension + 1)}{dimension +
 for group in productRange:
     for number in range(len(group)):
         group[number].value = (group[number].row - 1) * (group[number].column - 1)
-        # print(group[number], group[number].value)
 
 mulTableSheet.freeze_panes = "B2"
 # Saves workbook in current working directory.
 mulTableWorkBook.save('multiplicationTable.xlsx')
-# print(productRange)
